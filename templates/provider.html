@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Electricity Provider Dashboard</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            background-color: #f5f5f5; 
+            margin: 0;
+        }
+        .header { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+        .form-section { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+            margin-bottom: 20px;
+        }
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            gap: 20px; 
+            margin-bottom: 20px;
+        }
+        .stat-card { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #667eea;
+        }
+        .stat-card h3 { 
+            margin: 0 0 10px 0; 
+            color: #333; 
+            font-size: 18px;
+        }
+        .stat-value { 
+            font-size: 24px; 
+            font-weight: bold; 
+            color: #667eea; 
+        }
+        .cost-breakdown { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .cost-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 15px;
+        }
+        .cost-table th, .cost-table td { 
+            padding: 12px; 
+            text-align: left; 
+            border-bottom: 1px solid #ddd;
+        }
+        .cost-table th { 
+            background-color: #f8f9fa; 
+            font-weight: bold;
+        }
+        .form-row { 
+            display: flex; 
+            gap: 20px; 
+            align-items: center;
+        }
+        label, select { 
+            display: block; 
+            margin: 10px 0; 
+            padding: 8px; 
+            border: 1px solid #ddd; 
+            border-radius: 5px;
+        }
+        select { 
+            min-width: 200px; 
+        }
+        input[type="submit"] { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            border: none; 
+            padding: 12px 30px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        input[type="submit"]:hover { 
+            opacity: 0.9; 
+        }
+        .error { 
+            background: #ffebee; 
+            padding: 15px; 
+            border-radius: 5px; 
+            border-left: 4px solid #f44336; 
+            color: #c62828; 
+            margin-bottom: 20px;
+        }
+        .nav-links { 
+            text-align: center; 
+            margin-bottom: 20px;
+        }
+        .nav-links a { 
+            display: inline-block; 
+            padding: 10px 20px; 
+            margin: 0 10px; 
+            background: #667eea; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 5px;
+        }
+        .nav-links a:hover { 
+            background: #5a6fd8; 
+        }
+        .highlight { 
+            background: #e3f2fd; 
+            padding: 15px; 
+            border-radius: 5px; 
+            border-left: 4px solid #2196F3; 
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ Electricity Provider Dashboard</h1>
+            <p>Load Forecasting & Expense Prediction System</p>
+        </div>
+
+        <div class="nav-links">
+            <a href="/">👤 Individual User Predictions</a>
+            <a href="/provider">🏢 Provider Dashboard</a>
+        </div>
+
+        <div class="form-section">
+            <h2>📊 Load Forecasting for Next Month</h2>
+            <form method="POST">
+                <div class="form-row">
+                    <div>
+                        <label for="month">Select Month for Prediction:</label>
+                        <select name="month" id="month" required>
+                            <option value="">Choose a month...</option>
+                            {% for m in months %}
+                            <option value="{{ m }}">{{ m }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <input type="submit" value="🔮 Predict Total Expenses">
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        {% if error %}
+        <div class="error">
+            <strong>Error:</strong> {{ error }}
+        </div>
+        {% endif %}
+
+        {% if total_expenses %}
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>💰 Total Predicted Expenses</h3>
+                <div class="stat-value">${{ "%.2f"|format(total_expenses) }}</div>
+                <p>For {{ month_prediction }} - All Users</p>
+            </div>
+            
+            <div class="stat-card">
+                <h3>👥 Total Users</h3>
+                <div class="stat-value">{{ user_count }}</div>
+                <p>Active electricity consumers</p>
+            </div>
+            
+            <div class="stat-card">
+                <h3>⚡ Average Usage</h3>
+                <div class="stat-value">{{ "%.0f"|format(avg_usage) }} watts</div>
+                <p>Per user for {{ month_prediction }}</p>
+            </div>
+            
+            <div class="stat-card">
+                <h3>📈 Peak Usage User</h3>
+                <div class="stat-value">{{ peak_usage.user_id }}</div>
+                <p>{{ "%.0f"|format(peak_usage.predicted_usage) }} watts predicted</p>
+            </div>
+        </div>
+
+        <div class="cost-breakdown">
+            <h2>💵 Detailed Cost Breakdown</h2>
+            <table class="cost-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Total Energy Consumption</strong></td>
+                        <td>{{ "%.2f"|format(cost_breakdown.total_kwh) }} kWh</td>
+                        <td>Total kilowatt-hours for {{ month_prediction }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Rate per kWh</strong></td>
+                        <td>${{ "%.2f"|format(cost_breakdown.rate_per_kwh) }}</td>
+                        <td>Current electricity rate</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total Cost</strong></td>
+                        <td>${{ "%.2f"|format(cost_breakdown.total_cost) }}</td>
+                        <td>Total expenses for all users</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Average Cost per User</strong></td>
+                        <td>${{ "%.2f"|format(cost_breakdown.avg_cost_per_user) }}</td>
+                        <td>Average monthly bill per user</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="highlight">
+            <h3>📋 Key Insights:</h3>
+            <ul>
+                <li><strong>Peak User:</strong> {{ peak_usage.user_id }} with {{ "%.0f"|format(peak_usage.predicted_usage) }} watts</li>
+                <li><strong>Lowest User:</strong> {{ low_usage.user_id }} with {{ "%.0f"|format(low_usage.predicted_usage) }} watts</li>
+                <li><strong>Usage Range:</strong> {{ "%.0f"|format(peak_usage.predicted_usage - low_usage.predicted_usage) }} watts difference</li>
+                <li><strong>Revenue Forecast:</strong> ${{ "%.2f"|format(total_expenses) }} for {{ month_prediction }}</li>
+            </ul>
+        </div>
+        {% endif %}
+
+        <div class="highlight">
+            <h3>ℹ️ How This Works:</h3>
+            <p>This dashboard uses machine learning to predict electricity usage for all users based on their historical consumption patterns. The predictions help with:</p>
+            <ul>
+                <li><strong>Load Forecasting:</strong> Plan electricity generation and distribution</li>
+                <li><strong>Financial Planning:</strong> Estimate revenue and costs</li>
+                <li><strong>Resource Allocation:</strong> Optimize infrastructure investments</li>
+                <li><strong>Peak Demand Management:</strong> Identify high-usage periods</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html> 
