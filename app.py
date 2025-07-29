@@ -7,8 +7,8 @@ from datetime import datetime, timedelta
 app = Flask(__name__)
 
 # Load model and scaler
-model = joblib.load("linear_regression_model.pkl")
-scaler = joblib.load("scaler.pkl")
+model = joblib.load("linear_regression_model.pkl") # Now it's a LinearRegression object
+scaler = joblib.load("scaler.pkl")  # Now it's a StandardScaler object
 
 # Load real user data from CSV
 df = pd.read_csv("Electricity_Usage_by_Month.csv")
