@@ -41,10 +41,8 @@ electricity_load_distribution/
 ├── requirements.txt                # Python dependencies
 ├── linear_regression_model.pkl     # Trained ML model
 ├── scaler.pkl                      # Data scaler for preprocessing
-├── Electricity_Usage_by_Month.csv  # Real user data (99 users)
-├── Electricity_Usage_by_Month.xlsx # Excel version of data
+├── Electricity_Usage_by_Month.csv  # Real user data (99 users) 
 ├── model_train.ipynb              # Model training notebook
-├── model_train_xlsx.ipynb         # Alternative training notebook
 ├── templates/
 │   ├── index.html                 # Individual user prediction page
 │   └── provider.html              # Provider dashboard page
